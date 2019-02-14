@@ -7,8 +7,32 @@ const NonOrgInjector = {
 
     observer: undefined,
 
+    _widgets: [
+        {
+            domain: 'ethresear.ch',
+            querySelector: '.topic-owner .post-controls .actions',
+            uniqueClass: '.nonorg-widget',
+            buttonHtmlString: '<button class="widget-button btn-flat share no-text btn-icon nonorg-widget" style="background-color: #08c;color: #fff;">Add to NonOrg</button>'
+        },
+        {
+            domain: 'ethresear.ch',
+            querySelector: '.topic-owner .post-controls .actions',
+            uniqueClass: '.nonorg-widget2',
+            buttonHtmlString: '<button class="widget-button btn-flat share no-text btn-icon nonorg-widget2" style="background-color: #ED207B;color: #fff;">Add to NonOrg 2</button>'
+        }
+    ],
+
+    currentWidgets: null,
+
     init: function () {
         var me = this;
+
+        me.currentWidgets = me.findWidgetsByDomain(window.location.hostname);
+
+        if (me.currentWidgets == null || me.currentWidgets.length == 0) {
+            console.warn('NonOrg Injector: Available widgets not found');
+            return;
+        }
 
         var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
         if (!MutationObserver) {
@@ -34,23 +58,25 @@ const NonOrgInjector = {
     onMutate: function (mutationsList) {
         var me = this;
 
-        for (var i = 0; i < mutationsList.length; i++) {
-            var actionsDiv = mutationsList[i].target.querySelector('.topic-owner .post-controls .actions');
-            if (actionsDiv != null) {
-                var widget = actionsDiv.querySelector('.nonorg-widget');
-                if (widget == null) {
-                    me.injectWidget(actionsDiv);
+        for (var i = 0; i < me.currentWidgets.length; i++) {
+            for (var j = 0; j < mutationsList.length; j++) {
+                var actionsDiv = mutationsList[j].target.querySelector(me.currentWidgets[i].querySelector);
+                if (actionsDiv != null) {
+                    var widget = actionsDiv.querySelector(me.currentWidgets[i].uniqueClass);
+                    if (widget == null) {
+                        me.injectWidget(actionsDiv, me.currentWidgets[i].buttonHtmlString);
+                    }
+                    break;
                 }
-                break;
             }
         }
     },
 
-    injectWidget: function (node) {
+    injectWidget: function (node, html) {
         var me = this,
-            widget = me.createElementFromHTML('<button class="widget-button btn-flat share no-text btn-icon nonorg-widget" style="background-color: #08c;color: #fff;">Add to NonOrg</button>');
-        
-        widget.addEventListener("click", function() {
+            widget = me.createElementFromHTML(html);
+
+        widget.addEventListener("click", function () {
             me.onWidgetButtonClick.call(me);
         });
 
@@ -72,6 +98,12 @@ const NonOrgInjector = {
                 encodeURIComponent(workTitle) + '&link=' + encodeURIComponent(workLink);
 
         window.open(redirectUrl);
+    },
+
+    findWidgetsByDomain: function (domain) {
+        return this._widgets.filter(function (widget) {
+            return widget.domain === domain;
+        });
     }
 }
 
