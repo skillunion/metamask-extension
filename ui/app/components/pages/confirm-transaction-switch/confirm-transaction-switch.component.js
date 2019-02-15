@@ -10,9 +10,10 @@ import {
   CONFIRM_APPROVE_PATH,
   CONFIRM_TRANSFER_FROM_PATH,
   CONFIRM_TOKEN_METHOD_PATH,
+  CONFIRM_WIDGET_PATH,
   SIGNATURE_REQUEST_PATH,
 } from '../../../routes'
-import { isConfirmDeployContract } from '../../../helpers/transactions.util'
+import { isConfirmDeployContract, isWidgetTransaction } from '../../../helpers/transactions.util'
 import {
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_APPROVE,
@@ -38,6 +39,11 @@ export default class ConfirmTransactionSwitch extends Component {
 
     if (fetchingData) {
       return <Loading />
+    }
+
+    if (isWidgetTransaction(txData)) {
+      const pathname = `${CONFIRM_TRANSACTION_ROUTE}/${id}${CONFIRM_WIDGET_PATH}`
+      return <Redirect to={{ pathname }} />
     }
 
     if (isConfirmDeployContract(txData)) {

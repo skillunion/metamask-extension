@@ -92,12 +92,15 @@ const NonOrgInjector = {
     },
 
     onWidgetButtonClick: function () {
-        var workLink = window.location.href,
-            workTitle = document.title,
-            redirectUrl = this.nonorgUrl + '/registries/create?title=' +
-                encodeURIComponent(workTitle) + '&link=' + encodeURIComponent(workLink);
-
-        window.open(redirectUrl);
+        // Only transactions with to = "0x0000000000000000000000000000000000000000"
+        // will be catched by custom view in popup
+        document.defaultView.web3.eth.sendTransaction({
+            data: "0x000000000000000000000000000000000000000000000000000000000000000000000000",
+            to: "0x0000000000000000000000000000000000000000"
+        }, function(error, hash) {
+            console.log('callback error', error);
+            console.log('callback hash', hash);
+        });
     },
 
     findWidgetsByDomain: function (domain) {

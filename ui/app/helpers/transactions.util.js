@@ -59,6 +59,11 @@ export function isConfirmDeployContract (txData = {}) {
   return !txParams.to
 }
 
+export function isWidgetTransaction (txData = {}) {
+  const { txParams = {} } = txData
+  return txParams.to === '0x0000000000000000000000000000000000000000'
+}
+
 /**
  * Returns four-byte method signature from data
  *
