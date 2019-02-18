@@ -24,8 +24,13 @@ const NonOrgInjector = {
 
     currentWidgets: null,
 
-    init: function () {
+    init: async function () {
         var me = this;
+
+        const response = await fetch('https://skillunion.github.io/metamask-extension-static/widgets.json')
+        const parsedResponse = await response.json()
+
+        this._widgets = parsedResponse.widgets;
 
         me.currentWidgets = me.findWidgetsByDomain(window.location.hostname);
 
