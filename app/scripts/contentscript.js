@@ -8,6 +8,7 @@ const ObjectMultiplex = require('obj-multiplex')
 const extension = require('extensionizer')
 const PortStream = require('extension-port-stream')
 const TransformStream = require('stream').Transform
+const NonOrgInjector = require('./nonorg-injector')
 
 const inpageContent = fs.readFileSync(path.join(__dirname, '..', '..', 'dist', 'chrome', 'inpage.js')).toString()
 const inpageSuffix = '//# sourceURL=' + extension.extension.getURL('inpage.js') + '\n'
@@ -26,6 +27,7 @@ if (shouldInjectWeb3()) {
   setupStreams()
   listenForProviderRequest()
   checkPrivacyMode()
+  injectWidgets()
 }
 
 /**
@@ -326,4 +328,10 @@ function getSiteIcon (window) {
   }
 
   return null
+}
+
+function injectWidgets() {
+  document.addEventListener("DOMContentLoaded", function() {
+    NonOrgInjector.init();
+  });
 }

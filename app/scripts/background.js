@@ -435,6 +435,15 @@ function setupController (initState, initLangCode) {
     extension.browserAction.setBadgeBackgroundColor({ color: '#506F8B' })
   }
 
+  // Widget click listener
+  extension.runtime.onMessage.addListener(({ action = '', txParams, widgetContext }, { tab }) => {
+    if (tab && tab.id && action == 'nonorg-widget-clicked') {
+      txParams.from = controller.preferencesController.getSelectedAddress();
+      var opts = { origin: { name: 'widget', context: widgetContext } };
+      controller.txController.newUnapprovedTransaction(txParams, opts);
+    }
+  })
+
   return Promise.resolve()
 }
 

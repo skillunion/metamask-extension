@@ -60,8 +60,7 @@ export function isConfirmDeployContract (txData = {}) {
 }
 
 export function isWidgetTransaction (txData = {}) {
-  const { txParams = {} } = txData
-  return txParams.to === '0x0000000000000000000000000000000000000000'
+  return (txData.origin && txData.origin.name === 'widget');
 }
 
 /**

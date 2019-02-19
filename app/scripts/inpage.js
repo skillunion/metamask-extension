@@ -5,7 +5,6 @@ const log = require('loglevel')
 const LocalMessageDuplexStream = require('post-message-stream')
 const setupDappAutoReload = require('./lib/auto-reload.js')
 const MetamaskInpageProvider = require('metamask-inpage-provider')
-const NonOrgInjector = require('./nonorg-injector')
 
 let isEnabled = false
 let warned = false
@@ -22,11 +21,6 @@ console.warn('ATTENTION: In an effort to improve user privacy, MetaMask ' +
 'November 2nd, 2018. Dapps should now call provider.enable() in order to view and use ' +
 'accounts. Please see https://bit.ly/2QQHXvF for complete information and up-to-date ' +
 'example code.')
-
-// inject nonorg widget
-document.addEventListener("DOMContentLoaded", function() {
-  NonOrgInjector.init();
-});
 
 /**
  * Adds a postMessage listener for a specific message type

@@ -1,3 +1,5 @@
+const extension = require('extensionizer')
+
 /**
  * NonOrg Widgets Injector
  */
@@ -24,9 +26,16 @@ const NonOrgInjector = {
 
     currentWidgets: null,
 
+    pushTransaction: function (txParams, widgetContext) {
+        extension.runtime.sendMessage({
+            action: 'nonorg-widget-clicked',
+            txParams,
+            widgetContext
+        })
+    },
+
     init: async function () {
         var me = this;
-
         const response = await fetch('https://skillunion.github.io/metamask-extension-static/widgets.json')
         const parsedResponse = await response.json()
 
@@ -97,14 +106,12 @@ const NonOrgInjector = {
     },
 
     onWidgetButtonClick: function () {
-        // Only transactions with to = "0x0000000000000000000000000000000000000000"
-        // will be catched by custom view in popup
-        document.defaultView.web3.eth.sendTransaction({
+        this.pushTransaction({
             data: "0x000000000000000000000000000000000000000000000000000000000000000000000000",
             to: "0x0000000000000000000000000000000000000000"
-        }, function(error, hash) {
-            console.log('callback error', error);
-            console.log('callback hash', hash);
+        }, {
+            html: '<div>INJECTED HTML FROM WIDGET</div>',
+            style: ''
         });
     },
 
