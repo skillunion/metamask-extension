@@ -9,20 +9,7 @@ const NonOrgInjector = {
 
     observer: undefined,
 
-    _widgets: [
-        {
-            domain: 'ethresear.ch',
-            querySelector: '.topic-owner .post-controls .actions',
-            uniqueClass: '.nonorg-widget',
-            buttonHtmlString: '<button class="widget-button btn-flat share no-text btn-icon nonorg-widget" style="background-color: #08c;color: #fff;">Add to NonOrg</button>'
-        },
-        {
-            domain: 'ethresear.ch',
-            querySelector: '.topic-owner .post-controls .actions',
-            uniqueClass: '.nonorg-widget2',
-            buttonHtmlString: '<button class="widget-button btn-flat share no-text btn-icon nonorg-widget2" style="background-color: #ED207B;color: #fff;">Add to NonOrg 2</button>'
-        }
-    ],
+    _widgets: [],
 
     currentWidgets: null,
 
@@ -36,37 +23,61 @@ const NonOrgInjector = {
 
     init: async function () {
         var me = this;
-        const response = await fetch('https://skillunion.github.io/metamask-extension-static/widgets.json')
-        const parsedResponse = await response.json()
 
-        this._widgets = parsedResponse.widgets;
+        const widgetListResponse = await fetch('https://skillunion.github.io/metamask-extension-static/widgets-new.json')
+        const widgetListParsed = await widgetListResponse.json()
 
-        me.currentWidgets = me.findWidgetsByDomain(window.location.hostname);
-
-        if (me.currentWidgets == null || me.currentWidgets.length == 0) {
+        if (widgetListParsed == null || widgetListParsed.widgets == null || widgetListParsed.widgets.length == 0) {
             console.warn('NonOrg Injector: Available widgets not found');
             return;
         }
 
-        var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-        if (!MutationObserver) {
-            console.warn('NonOrg Injector: MutationObserver is not supported. NonOrg widgets are not injected');
+        for (var i = 0; i < widgetListParsed.widgets.length; i++) {
+            var widgetInfo = widgetListParsed.widgets[i];
+            if (!widgetInfo.url || !widgetInfo.hash) return;
+
+            const widgetResponse = await fetch(widgetInfo.url);
+            const widgetText = await widgetResponse.text();
+            // TODO: Check hash
+            const widget = eval(widgetText);
+            me._widgets.push(widget);
+        }
+
+        if (me._widgets.length == 0) {
+            console.warn('NonOrg Injector: Available widgets not found');
             return;
         }
 
-        const mutationConfig = {
-            childList: true,
-            //attributes: true,
-            //characterData: true,
-            subtree: true
-            //attributeOldValue: true,
-            //characterDataOldValue: true
-        };
+        console.log('NonOrg Injector: %s widget(s) was loaded', me._widgets.length);
 
-        me.observer = new MutationObserver(function (mutationsList) {
-            me.onMutate.call(me, mutationsList);
-        });
-        me.observer.observe(document.body, mutationConfig);
+        // this._widgets = parsedResponse.widgets;
+
+        // me.currentWidgets = me.findWidgetsByDomain(window.location.hostname);
+
+        // if (me.currentWidgets == null || me.currentWidgets.length == 0) {
+        //     console.warn('NonOrg Injector: Available widgets not found');
+        //     return;
+        // }
+
+        // var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+        // if (!MutationObserver) {
+        //     console.warn('NonOrg Injector: MutationObserver is not supported. NonOrg widgets are not injected');
+        //     return;
+        // }
+
+        // const mutationConfig = {
+        //     childList: true,
+        //     //attributes: true,
+        //     //characterData: true,
+        //     subtree: true
+        //     //attributeOldValue: true,
+        //     //characterDataOldValue: true
+        // };
+
+        // me.observer = new MutationObserver(function (mutationsList) {
+        //     me.onMutate.call(me, mutationsList);
+        // });
+        // me.observer.observe(document.body, mutationConfig);
     },
 
     onMutate: function (mutationsList) {
