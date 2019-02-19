@@ -3,8 +3,8 @@ import ConfirmWidget from './confirm-widget.component'
 
 const mapStateToProps = state => {
   const { confirmTransaction: { txData } = {} } = state
-  const { confirmTransaction: { txData: { origin: { html } } } = {} } = state
-  const { confirmTransaction: { txData: { origin: { style } } } = {} } = state
+  const { confirmTransaction: { txData: { origin: { context: { html } } } } = {} } = state
+  const { confirmTransaction: { txData: { origin: { context: { style } } } } = {} } = state
 
   return {
     txData,
