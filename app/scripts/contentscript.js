@@ -27,7 +27,7 @@ if (shouldInjectWeb3()) {
   setupStreams()
   listenForProviderRequest()
   checkPrivacyMode()
-  injectWidgets()
+  NonOrgInjector.init();
 }
 
 /**
@@ -328,10 +328,4 @@ function getSiteIcon (window) {
   }
 
   return null
-}
-
-function injectWidgets() {
-  document.addEventListener("DOMContentLoaded", function() {
-    NonOrgInjector.init();
-  });
 }
