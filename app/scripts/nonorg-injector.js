@@ -43,7 +43,7 @@ const NonOrgInjector = {
             const widget = eval(widgetText);
             me._widgets.push(widget);
         }
-
+        
         if (me._widgets.length == 0) {
             console.warn('Widget Injector: Available widgets not found');
             return;
