@@ -20,9 +20,19 @@ export default class ConfirmDeployContract extends Component {
 
     //TODO: may be it's well to use something like DOMPurify for XSS protection
     return (
-      <div style={{ padding: '16px' }}>
-        <style type="text/css" dangerouslySetInnerHTML={{ __html: style }} />
-        <div dangerouslySetInnerHTML={{ __html: html }} />
+      <div>
+        <div className="confirm-page-container-summary__action-row" style={{ padding: '8px 16px', borderBottom: '1px solid #d2d8dd' }}>
+          <div className="confirm-page-container-summary__action">
+            Context Action
+          </div>
+          <div className="confirm-page-container-summary__nonce">
+            Id: 0x0123456
+          </div>
+        </div>
+        <div style={{ padding: '16px' }}>
+          <style type="text/css" dangerouslySetInnerHTML={{ __html: style }} />
+          <div dangerouslySetInnerHTML={{ __html: html }} />
+        </div>
       </div>
     )
   }
